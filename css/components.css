@@ -1,2 +1,0 @@
-/* Legacy component layer: page-specific component refinements live here. Shared chrome is in shared.css. */
-.card,.btn,.tag{isolation:isolate}.site-nav .active{color:var(--gold-light);font-weight:700}.member-link{color:var(--gold-light)!important}.member-link span{font-size:.62rem;border:1px solid var(--line-gold);padding:1px 6px;border-radius:999px;margin-inline-start:4px}.live-dot{color:var(--gold-light);font-size:.72rem}.live-dot::first-letter{color:var(--gold-light)}
