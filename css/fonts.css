@@ -7,3 +7,4 @@
 @font-face{font-family:ArshadShekasteh;src:url('/assets/fonts/Shekasteh.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 :root{--font-family:'ArshadVazirmatn',Tahoma,Arial,sans-serif;--font-display:'ArshadVazirmatn',Tahoma,Arial,sans-serif;--font-script:'ArshadShekasteh','ArshadVazirmatn',serif}
 html[lang='fa'],body{font-family:var(--font-family);font-feature-settings:'kern' 1,'liga' 1}h1,h2,h3,h4,h5,h6{font-family:var(--font-display);font-weight:700}input,button,select,textarea{font-family:var(--font-family)}
+.hero-title,.section-header h1,.section-header h2,.page-title,.page-hero h1,.content-title,.display-title,.section-title{font-family:var(--font-script);font-weight:400;line-height:1.45;letter-spacing:0}
