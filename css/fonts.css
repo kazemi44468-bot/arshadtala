@@ -1,4 +1,4 @@
-/* ArshadTala Persian typography system. All fonts are served locally from assets/fonts. */
+/* ArshadTala Persian typography system — local assets only */
 @font-face{font-family:ArshadVazirmatn;src:url('/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:ArshadVazirmatn;src:url('/assets/fonts/Vazirmatn-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:ArshadVazirmatn;src:url('/assets/fonts/Vazirmatn-SemiBold.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
@@ -7,5 +7,10 @@
 @font-face{font-family:ArshadShekasteh;src:url('/assets/fonts/shekasteh%20v2.001.woff') format('woff');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:ArshadNastaliq;src:url('/assets/fonts/irannastaliq.woff') format('woff');font-weight:400;font-style:normal;font-display:swap}
 :root{--font-family:'ArshadVazirmatn',Tahoma,Arial,sans-serif;--font-display:'ArshadVazirmatn',Tahoma,Arial,sans-serif;--font-script:'ArshadShekasteh','ArshadNastaliq','ArshadVazirmatn',serif}
-html[lang='fa'],body{font-family:var(--font-family);font-feature-settings:'kern' 1,'liga' 1}h1,h2,h3,h4,h5,h6{font-family:var(--font-display);font-weight:700}input,button,select,textarea{font-family:var(--font-family)}
-.hero-title,.section-header h1,.section-header h2,.page-title,.page-title h1,.page-hero h1,.content-title,.display-title,.section-title,.section-title h1,.section-title h2{font-family:var(--font-script)!important;font-weight:400!important;line-height:1.5;letter-spacing:0}
+html[lang='fa'],body{font-family:var(--font-family);font-feature-settings:'kern' 1,'liga' 1}
+input,button,select,textarea{font-family:var(--font-family)}
+.hero-title,.section-header h1,.section-header h2,.page-title,.page-title h1,.page-hero h1,.content-title,.display-title,.section-title,.section-title h1,.section-title h2{font-family:var(--font-script)!important;font-weight:400!important;line-height:1.55!important;letter-spacing:0!important}
+body.has-floating-sidebar{padding-right:120px!important}
+body.has-floating-sidebar .container{max-width:1300px}
+@media(max-width:1024px) and (min-width:769px){body.has-floating-sidebar{padding-right:82px!important}}
+@media(max-width:768px){body.has-floating-sidebar{padding-right:12px!important}}
