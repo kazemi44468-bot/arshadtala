@@ -22,11 +22,7 @@ def find_number(text: str, pattern: str):
 
 
 def collect():
-    response = requests.get(
-        SOURCE_URL,
-        timeout=30,
-        headers={"User-Agent": "Mozilla/5.0 (compatible; ArshadtalaPriceBot/1.0; +https://github.com/kazemi44468-bot/arshadtala)"},
-    )
+    response = requests.get(SOURCE_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0 (compatible; ArshadtalaPriceBot/1.0; +https://github.com/kazemi44468-bot/arshadtala)"})
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
     text = clean(soup.get_text(" ", strip=True))
@@ -46,22 +42,15 @@ def collect():
         "dirham": find_number(text, r"درهم\s+([\d,]+)"),
     }
 
-    last_update = None
-    match = re.search(r"آخرین\s+بروزرسانی:\s*([^\n<]{5,80})", text)
+    source_updated_at = None
+    match = re.search(r"آخرین\s+بروزرسانی:\s*([0-9۰-۹]{1,2}\s+[^\s]+\s+[0-9۰-۹]{4}\s*-\s*[0-9۰-۹]{1,2}:[0-9۰-۹]{2}:[0-9۰-۹]{2})", text)
     if match:
-        last_update = match.group(1).strip()
+        source_updated_at = match.group(1).strip()
 
     if not any(prices.values()):
         raise RuntimeError("No recognizable live prices were found on the union board")
 
-    return {
-        "source": SOURCE_URL,
-        "sourceName": "اتحادیه فروشندگان و سازندگان طلا، جواهر، نقره و سکه تهران",
-        "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "sourceUpdatedAt": last_update,
-        "status": "ok",
-        "prices": prices,
-    }
+    return {"source": SOURCE_URL, "sourceName": "اتحادیه فروشندگان و سازندگان طلا، جواهر، نقره و سکه تهران", "updatedAt": datetime.now(timezone.utc).isoformat(), "sourceUpdatedAt": source_updated_at, "status": "ok", "prices": prices}
 
 
 def write_json(payload):
