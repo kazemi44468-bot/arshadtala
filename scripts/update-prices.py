@@ -9,29 +9,22 @@ from bs4 import BeautifulSoup
 SOURCE_URL = "https://www.estjt.ir/tv/"
 ROOT = Path(__file__).resolve().parents[1]
 DATA_FILE = ROOT / "data" / "prices.json"
-INDEX_FILE = ROOT / "index.html"
 
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 
-def fa_to_en(value: str) -> str:
-    return value.translate(DIGITS).replace("٬", ",").replace("،", ",")
-
-
 def clean(value: str) -> str:
-    return re.sub(r"\s+", " ", fa_to_en(value or "")).strip()
+    return re.sub(r"\s+", " ", (value or "").translate(DIGITS)).strip()
 
 
 def numeric(value: str):
-    value = clean(value).replace(",", "")
+    value = clean(value).replace(",", "").replace("،", "")
     match = re.search(r"[-+]?\d+(?:\.\d+)?", value)
     return match.group(0) if match else None
 
 
 def normalize_label(label: str) -> str:
-    label = clean(label).replace("ي", "ی").replace("ك", "ک")
-    label = label.replace("‌", " ")
-    return label
+    return clean(label).replace("ي", "ی").replace("ك", "ک").replace("‌", " ")
 
 
 def extract_rows(html: str):
@@ -43,6 +36,10 @@ def extract_rows(html: str):
             cells = [c for c in cells if c]
             if len(cells) >= 2:
                 rows.append((normalize_label(cells[0]), cells[-1]))
+    for tr in soup.select("[role='row']"):
+        cells = [clean(c.get_text(" ", strip=True)) for c in tr.select("[role='cell'],[role='gridcell'],[role='columnheader']")]
+        if len(cells) >= 2:
+            rows.append((normalize_label(cells[0]), cells[-1]))
     return rows
 
 
@@ -60,12 +57,18 @@ def collect():
     response = requests.get(
         SOURCE_URL,
         timeout=30,
-        headers={
-            "User-Agent": "Mozilla/5.0 (compatible; ArshadtalaPriceBot/1.0; +https://github.com/kazemi44468-bot/arshadtala)"
-        },
+        headers={"User-Agent": "Mozilla/5.0 (compatible; ArshadtalaPriceBot/1.0; +https://github.com/kazemi44468-bot/arshadtala)"},
     )
     response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+    print("SOURCE_STATUS", response.status_code, "BYTES", len(response.text), "TITLE", clean(soup.title.get_text(" ", strip=True) if soup.title else ""))
+    scripts = [s.get("src") for s in soup.find_all("script") if s.get("src")]
+    print("SCRIPT_SRCS", json.dumps(scripts[:30], ensure_ascii=False))
+    text = clean(soup.get_text(" ", strip=True))
+    print("PAGE_TEXT_HEAD", text[:2500])
+
     rows = extract_rows(response.text)
+    print("TABLE_ROWS", json.dumps(rows[:100], ensure_ascii=False))
 
     prices = {
         "gold18": find_value(rows, ["طلای 18", "18 عیار", "گرم طلای 18"]),
@@ -83,14 +86,7 @@ def collect():
     }
     if not any(prices.values()):
         raise RuntimeError("No recognizable price rows were found on the union page")
-
-    return {
-        "source": SOURCE_URL,
-        "sourceName": "اتحادیه فروشندگان و سازندگان طلا، جواهر، نقره و سکه تهران",
-        "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "status": "ok",
-        "prices": prices,
-    }
+    return {"source": SOURCE_URL, "sourceName": "اتحادیه فروشندگان و سازندگان طلا، جواهر، نقره و سکه تهران", "updatedAt": datetime.now(timezone.utc).isoformat(), "status": "ok", "prices": prices}
 
 
 def write_json(payload):
