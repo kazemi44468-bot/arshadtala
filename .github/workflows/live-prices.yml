@@ -17,18 +17,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-
       - name: Install parser dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4
-
       - name: Fetch union prices
         run: python scripts/update-prices.py
-
       - name: Patch homepage price bindings
         run: |
           python - <<'PY'
@@ -42,8 +38,7 @@ jobs:
               s = s.replace(old, new)
           elif current in s:
               s = s.replace(current, new)
-          marker = '<script>const tickerData='
-          start = s.find(marker)
+          start = s.find('<script>(async()=>{const map={gold18:')
           if start != -1:
               end = s.find('</script>', start)
               if end != -1:
@@ -51,7 +46,6 @@ jobs:
                   s = s[:start] + script + s[end+9:]
           p.write_text(s, encoding='utf-8')
           PY
-
       - name: Commit generated price data
         run: |
           git config user.name "arshadtala-price-bot"
